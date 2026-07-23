@@ -1,8 +1,8 @@
 # wap to load document using langchain
-from langchain_community.document_loaders import TextLoader
+from langchain_community.document_loaders import PyPDFLoader
 
-def load_ducument(filepath):
+def load_document(filepath):
 
-    loader= TextLoader(filepath)
+    loader= PyPDFLoader(filepath)
 
     return loader.load()
