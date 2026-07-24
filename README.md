@@ -1,225 +1,230 @@
-📄 PDF RAG Chatbot
+# 📄 PDF RAG Chatbot
 
-An AI-powered chatbot that answers questions from any PDF document using Retrieval-Augmented Generation (RAG). Built with LangChain, FAISS, HuggingFace Sentence Transformers, and Google Gemini 2.5 Flash.
+An AI-powered PDF Question Answering chatbot built using **LangChain**, **FAISS**, **HuggingFace Embeddings**, and **Google Gemini 2.5 Flash**. The chatbot retrieves relevant information from a PDF using **Retrieval-Augmented Generation (RAG)** and answers questions based only on the document's content.
+
 ---
 
-🚀 What It Does
+## 🚀 Features
 
-Upload any PDF → Ask questions in plain English → Get accurate, context-aware answers.
-The chatbot does not hallucinate. It answers only from the content of your PDF. If the answer isn't in the document, it replies: "I don't know."
+- 📄 Load PDF documents
+- ✂️ Split documents into text chunks
+- 🧠 Generate embeddings using HuggingFace Sentence Transformers
+- 💾 Store embeddings in FAISS Vector Database
+- 🔍 Retrieve the most relevant document chunks
+- 🤖 Generate answers using Google Gemini 2.5 Flash
+- 🏗️ Modular project structure using LangChain
+
 ---
 
-🧠 How It Works (RAG Pipeline)
+# 🧠 RAG Workflow
 
+```text
+                OFFLINE (Ingestion)
+
+PDF Document
+      │
+      ▼
+PyPDFLoader
+      │
+      ▼
+RecursiveCharacterTextSplitter
+      │
+      ▼
+HuggingFace Embeddings
+      │
+      ▼
+FAISS Vector Database
+
+----------------------------------------------
+
+                 ONLINE (Chat)
+
+User Question
+      │
+      ▼
+Load FAISS Database
+      │
+      ▼
+Similarity Search
+      │
+      ▼
+Top Relevant Chunks
+      │
+      ▼
+Prompt Template
+      │
+      ▼
+Google Gemini 2.5 Flash
+      │
+      ▼
+Generated Answer
 ```
-📄 PDF Document
-      ↓
-  Load Pages          (PyPDFLoader)
-      ↓
-  Split into Chunks   (RecursiveCharacterTextSplitter)
-      ↓
-  Generate Embeddings (HuggingFace all-MiniLM-L6-v2)
-      ↓
-  Store in FAISS DB   (Vector Database)
-
-          ⬇ ── Ingestion Complete ── ⬇
-
-  User Question
-      ↓
-  Embed Question      (same embedding model)
-      ↓
-  Similarity Search   (FAISS — top 3 chunks)
-      ↓
-  Build Prompt        (context + question)
-      ↓
-  Send to Gemini LLM  (Google Gemini 2.5 Flash)
-      ↓
-  Final Answer ✅
-```
 
 ---
-🛠️ Tech Stack
 
-Category	Technology
-Language	Python 3.11
-LLM	Google Gemini 2.5 Flash
-Orchestration	LangChain
-Embeddings	HuggingFace `sentence-transformers/all-MiniLM-L6-v2`
-Vector Database	FAISS (Facebook AI Similarity Search)
-PDF Loader	PyPDFLoader (LangChain Community)
-Text Splitter	RecursiveCharacterTextSplitter
-Environment	python-dotenv
+# 🛠️ Tech Stack
+
+| Category | Technology |
+|----------|------------|
+| Language | Python 3.11 |
+| Framework | LangChain |
+| LLM | Google Gemini 2.5 Flash |
+| Embedding Model | sentence-transformers/all-MiniLM-L6-v2 |
+| Vector Database | FAISS |
+| PDF Loader | PyPDFLoader |
+| Text Splitter | RecursiveCharacterTextSplitter |
+| Environment | python-dotenv |
 
 ---
-📁 Project Structure
 
-```
+# 📂 Project Structure
+
+```text
 pdf-rag-chatbot/
 │
-├── services/
-│   ├── __init__.py         # Package initializer
-│   ├── loader.py           # Load PDF using PyPDFLoader
-│   ├── chunker.py          # Split documents into chunks
-│   ├── embeddings.py       # Load HuggingFace embedding model
-│   ├── vector_store.py     # Store embeddings in FAISS
-│   ├── llm.py              # Google Gemini LLM integration
-│   └── prompt.py           # Prompt template for RAG
-│
 ├── documents/
-│   └── company.pdf         # Your PDF document (place here)
+│   └── company.pdf
 │
-├── faiss_db/               # Auto-created after running ingest.py
+├── services/
+│   ├── loader.py
+│   ├── chunker.py
+│   ├── embeddings.py
+│   ├── vector_store.py
+│   ├── prompt.py
+│   └── llm.py
 │
-├── ingest.py               # Step 1: Load, chunk, embed, store
-├── retrieval.py            # Step 2: Retrieve relevant chunks
-├── chatbot.py              # Step 3: Chat interface
+├── chatbot.py
+├── ingestion.py
+├── retrieval.py
 │
-├── .env                    # API keys (not pushed to GitHub)
 ├── .gitignore
-├── requirements.txt
-└── README.md
+├── README.md
+└── requirements.txt
 ```
+
+> **Note:** The `faiss_db/` folder is generated automatically after running `ingestion.py` and is intentionally excluded from Git.
+
 ---
-⚙️ Setup & Installation
 
-1. Clone the Repository
+# ⚙️ Installation
+
+### 1. Clone the repository
+
 ```bash
+git clone https://github.com/your-username/pdf-rag-chatbot.git
 
-git clone https://github.com/yourusername/pdf-rag-chatbot.git
 cd pdf-rag-chatbot
 ```
 
-2. Create Virtual Environment
+### 2. Create a virtual environment
+
+**Windows**
+
 ```bash
+python -m venv .venv
 
-python -m venv venv
-
-# Windows
-venv\Scripts\activate
-
-# Linux / Mac
-source venv/bin/activate
-
+.venv\Scripts\activate
 ```
 
-3. Install Dependencies
-```bash
+**Linux / macOS**
 
+```bash
+python3 -m venv .venv
+
+source .venv/bin/activate
+```
+
+### 3. Install dependencies
+
+```bash
 pip install -r requirements.txt
-
 ```
 
-4. Set Up Environment Variables
-Create a `.env` file in the root folder:
+### 4. Configure Environment Variables
+
+Create a `.env` file in the project root.
 
 ```env
-
-GOOGLE_API_KEY=your_google_api_key_here
-
-```
-
-Get your free API key at: aistudio.google.com
-
-5. Add Your PDF
-
-Place your PDF file inside the `documents/` folder and update the path in `ingest.py`:
-
-```python
-
-pdf_path = "documents/your_file.pdf"
-
+GOOGLE_API_KEY=YOUR_API_KEY
 ```
 
 ---
-▶️ How to Run
 
-Step 1 — Ingest the PDF (run once)
+# ▶️ Run the Project
+
+### Step 1 : Build the Vector Database
 
 ```bash
-
-python ingest.py
-
-```
-Expected output:
-
+python ingestion.py
 ```
 
-Loading PDF...
+This will:
 
-Loaded 7 pages
-Creating Chunks...
-Created 42 chunks
-Loading Embedding Model...
-The final Result: Data has been stored Successfully
-```
+- Load the PDF
+- Create document chunks
+- Generate embeddings
+- Store vectors inside the FAISS database
 
-Step 2 — Start the Chatbot
+---
+
+### Step 2 : Start the Chatbot
+
 ```bash
-
 python chatbot.py
-
 ```
 
-Step 3 — Ask Questions
+Example:
+
+```text
+Ask Question >>> What services does the company provide?
+
+Answer:
+...
 ```
 
-Ask question >>> Who is the CEO of the company?
-Ask question >>> What products does the company offer?
-Ask question >>> What is the pricing for the Growth plan?
-Ask question >>> exit
+---
 
-```
+# 📚 Concepts Used
+
+- Retrieval-Augmented Generation (RAG)
+- LangChain
+- Semantic Search
+- Vector Embeddings
+- FAISS Vector Database
+- Prompt Engineering
+- Google Gemini API
 
 ---
 
-💡 Key Concepts Used
+# 🔒 Security
 
-Retrieval-Augmented Generation (RAG)
-Instead of relying on the LLM's training data, RAG retrieves relevant information directly from your document and provides it as context to the LLM. This eliminates hallucination and keeps answers accurate and up-to-date.
-Vector Embeddings
-Text is converted into numerical vectors using a sentence transformer model. Similar meaning = similar vectors. This allows semantic search rather than keyword matching.
-FAISS (Vector Database)
-Facebook AI Similarity Search — stores embedding vectors and retrieves the most similar ones based on a user's query in milliseconds, even across millions of vectors.
-Chunk Overlap
-Documents are split into overlapping chunks so that context is not lost at chunk boundaries. Chunk size: 500 characters, overlap: 20 characters.
+- `.env` is excluded from Git.
+- `faiss_db/` is excluded from Git because it is generated automatically.
+- Store API keys only inside the `.env` file.
 
 ---
 
-🔒 Security Notes
-Never commit your `.env` file to GitHub
-The `.gitignore` file already excludes `.env` and `faiss_db/`
-API keys should always be loaded via environment variables
+# 🚀 Future Improvements
+
+- Streamlit UI
+- FastAPI API
+- Multiple PDF support
+- Conversation memory
+- Metadata filtering
+- Docker deployment
+- Support DOCX and Excel documents
 
 ---
 
-🔮 Future Improvements
-[ ] Add Streamlit UI for browser-based chat interface
-[ ] Support multiple PDF uploads at once
-[ ] Add conversation memory (chat history)
-[ ] Stream LLM responses token by token
-[ ] Add FastAPI wrapper to expose as REST API
-[ ] Dockerize for easy deployment
-[ ] Support DOCX, Excel, and web page ingestion
+# 👨‍💻 Author
+
+**Sahil Nitnaware**
+
+- GitHub: https://github.com/sahilnitnaware
+- LinkedIn: https://linkedin.com/in/sahilnitnaware
 
 ---
 
-📚 What I Learned
-How RAG (Retrieval-Augmented Generation) works end-to-end
-Building modular Python service architecture
-Working with vector databases (FAISS) and embeddings
-Integrating LLMs via LangChain (Google Gemini)
-Managing API keys securely with `.env`
-Chunking strategies for document processing
+# 📄 License
 
----
-
-🙋 Author
-Sahil Nitnaware
-GitHub: github.com/sahilnitnaware
-Email: sahilnitnaware71@gmail.com
-LinkedIn: linkedin.com/in/sahilnitnaware
-
----
-
-📄 License
-This project is open source and available under the MIT License.
+This project is licensed under the MIT License.
